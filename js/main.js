@@ -1,82 +1,67 @@
 /*app's constants*/
-const count = ['x', 'o'];
-const map = {
-    0:document.getElementById('0'),
-    1:document.getElementById('1'),
-    2:document.getElementById('2'),
-    3:document.getElementById('3'),
-    4:document.getElementById('4'),
-    5:document.getElementById('5'),
-    6:document.getElementById('6'),
-    7:document.getElementById('7'),
-    8:document.getElementById('8')
-}
+ var winMap = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [8, 3, 2],
+        [1, 4, 7],
+        [6, 5, 0], 
+        [0, 4, 8], 
+        [6, 4, 2]
+    ];
 /*----- app's state (variables) -----*/
-var input;
+var input, turn, i, ticker, winner;
 /*----- cached element references -----*/
-var o, x, i;
-var winMap = {
-    0:null,
-    1:null,
-    2:null,
-    3:null,
-    4:null,
-    5:null,
-    6:null,
-    7:null,
-    8:null
-}
+var board = [];
 /*----- event listeners ------*/
 document.querySelector('table')
-    .addEventListener('click', plainClick);
+    .addEventListener('click', handleClick);
+document.getElementById('restart')
+    .addEventListener('onclick', button);
 /*----- functions ------*/
 initialize();
-end();
-
-function initialize () {
+function initialize() {
+    board = [
+    NaN, NaN, NaN, 
+    NaN, NaN, NaN, 
+    NaN, NaN, NaN
+    ];
     i = 0;
-    x = 0;
-    o = 0;
-}
-function plainClick(event) {
-    input = event.target.id;
-    if (map[input].textContent) {
+    winner = NaN;
+};
+
+
+//credit to jons winlogic
+function check() {
+    for (var q = 0; q < 8; q++) {
+        let win = winMap[q],
+            [a, b, c] = win;
+        (board[a] === board[b]) && (board[a] === board[c]) ?  winner = ticker : null;
+    }
+};
+
+
+function handleClick(evt) {
+    input = event.target;
+    if (input.textContent) {
         return;
     } else {
-        render(input);
-        ticker(input);
+        ticker = (i % 2 === 0 ? 1 : -1);
+        board[input.id] = ticker;
+        check();
+        i++; 
+        render();
     }
-}
+};
 
-function ticker() {
-    i++;
-    if (i%2) {
-        x += parseInt(input);
-    } else {
-        o += parseInt(input);
-    }
-}
+function render() {
+   input.textContent = ticker > 0 ? 'x' : 'o';
+   if (winner) {
+    document.querySelector('h2').innerHTML = `${input.textContent}!!!!`;
 
-function end() {
-    if (i === 9) {
-        console.log('You should already know who won');
-    }
-}
+   }
+};
 
-
-// function winCheck() {
-//     var circles = o.split('');
-//     var exes = x.split('');
-//     var temp1 = 0;
-//     var temp2 = 0;
-//     for (var j = 1; j <= 5; j++) {
-//         temp1 += parseInt(circles[j]);
-//         temp2 += parseInt(exes[j]);
-//     }
-//     console.log(temp1);
-//     temp3 = temp1;
-// }
-
-function render(input) {
-    map[input].textContent = count[i%2]
+function button() {
+    initialize();
 }
